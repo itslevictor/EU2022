@@ -1,0 +1,672 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Encontros Universitários 2022</title>
+<link href="./index_files/style.css" media="screen" type="text/css" rel="stylesheet">
+<!--<script src="../../js/jquery/jquery-1.2.3.js" type="text/javascript"></script>-->
+<script src="./index_files/jquery.min.js.baixados"></script>
+<!--<script src="../../js/jquery/jquery.maskedinput-1.1.3.js" type="text/javascript"></script>-->
+<script src="./index_files/inputmask.js.baixados" type="text/javascript"></script>
+<script src="./index_files/inputmask.extensions.js.baixados" type="text/javascript"></script>
+<script src="./index_files/jquery.inputmask.js.baixados" type="text/javascript"></script>
+<script src="./index_files/functions.js.baixados" type="text/javascript"></script>
+<link rel="shortcut icon" href="http://sysprppg.ufc.br/favicon.ico">
+<style type="text/css">@font-face { font-family: Roboto; src: url("chrome-extension://mcgbeeipkmelnpldkobichboakdfaeon/css/Roboto-Regular.ttf"); }</style></head>
+<body>
+<!--	<div id="cabecalho_head">
+	</div>-->
+	<div id="cabecalho">
+	</div>
+<!--	<div id="cabecalho_footer">
+	</div>-->
+	<div id="principal_head">
+        <div class="logout" align="right"><a class="link" href="http://sysprppg.ufc.br/eu/2022/Resumos/modulos/inscricao/logout.php">Sair</a> </div>
+	</div>
+
+    <link href="./index_files/chosen.min.css" media="screen" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="./index_files/punycode.min.js.baixados"></script>
+    <script type="text/javascript" src="./index_files/chosen.jquery.min.js.baixados"></script>
+    <script type="text/javascript">
+        jQuery(function($) {
+            $("#res_ori_cel").inputmask({ mask: "(99) 99999-9999", placeholder: " " });
+            $("#res_ori_cpf").inputmask({ mask: "99999999999" , placeholder: "" });
+            $('.chosen-select').chosen({
+                width: '95%',
+                no_results_text: 'Sem resultados para'
+            });
+// fase de edição
+//            $("#res_tipo1").click(function(){
+//                return false;
+//            });
+//            $("#res_tipo2").click(function(){
+//                return false;
+//            });
+            recuperarNomeOrientador();
+            recuperarGrandeArea();
+            handlePne('A');
+            handlePne('O');
+        });
+
+        function Contador(field, MaxLength) {
+            obj = field;
+            if (MaxLength != 0) {
+                if (punycode.ucs2.decode(obj.value).length > MaxLength)  {
+                    obj.value = obj.value.substring(0, MaxLength);
+                    document.getElementById('contador')
+                            .innerHTML = "<span style='color:#FF0000; " +
+                                "font-weight:bold; font-size: 12px'>" +
+                                punycode.ucs2.decode(obj.value).length + "/" + MaxLength +
+                                " caracteres digitados</span>";
+                } else {
+                    document.getElementById('contador')
+                            .innerHTML = "<span style='font-size: 12px'>" +
+                                punycode.ucs2.decode(obj.value).length + "/" + MaxLength +
+                                " caracteres digitados</span>";
+                }
+            }
+        }
+
+        function recuperarNomeOrientador() {
+            var cpf = document.getElementById('res_ori_cpf');
+
+            if (cpf.value.length == 11) {
+                if (validaCpf(cpf)) {
+                    var data = $("#fmCadastroResumo").serialize();
+
+                    $.ajax({
+                        url: 'acoes.php',
+                        data: data + '&opcao=recuperarNomeOrientador',
+                        type: 'POST',
+                        success: function(data) {
+                            var ori = JSON.parse(data);
+                            if(ori.nome == null) {
+                                $("#nome_ori").html('');
+                                $("#res_ori").val('');
+                                $("#res_ori_email").val('');
+                                $("#res_ori_cpf").val('');
+                                $("#res_ori_cel").val('');
+                                alert("Orientador não encontrado.\n"
+                                    + "Favor entrar em contato em encontrosuniversitarios@prograd.ufc.br"
+                                    + " informando: Nome Completo, CPF, Email\n e"
+                                    + " Telefone do Orientador para solicitar o cadastro.");
+                            } else {
+                                $("#nome_ori").html(ori.nome);
+                                $("#res_ori").val(ori.nome);
+                                $("#res_ori_email").val(ori.email);
+                                $("#res_ori_cel").val(ori.celular);
+                            }
+                        }
+                    });
+                } else {
+                    alert("Preencha o CPF do Orientador corretamente.");
+                    $("#nome_ori").html('');
+                    $("#res_ori").val('');
+                    $("#res_ori_email").val('');
+                    $("#res_ori_cpf").val('');
+                    $("#res_ori_cel").val('');
+                }
+            } else {
+                $("#nome_ori").html('');
+                $("#res_ori").val('');
+                $("#res_ori_email").val('');
+                $("#res_ori_cpf").val('');
+                $("#res_ori_cel").val('');
+            }
+        }
+
+        function recuperarGrandeArea() {
+            var area = $("#res_area").val();
+
+            if (area !== "00") {
+                var data = $("#fmCadastroResumo").serialize();
+
+/*                 $("#res_areas_correlatas option").attr("disabled", false);
+                $("#res_areas_correlatas option[value='"+ area + "']").attr({
+                    "disabled": true,
+                    "selected": true
+                });
+                $("#res_areas_correlatas").trigger("chosen:updated"); */
+
+                $.ajax({
+                    url: 'acoes.php',
+                    data: data + '&opcao=recuperarGrandeArea',
+                    type: 'POST',
+                    success: function(result) {
+                        $('#res_grande_area').html(result);
+                    }
+                });
+            }
+        }
+
+        function verificarDados() {
+            var cpf = document.getElementById('res_ori_cpf');
+            var email = document.getElementById("res_ori_email");
+            var cel = document.getElementById("res_ori_cel");
+            var titulo = document.getElementById('res_titulo');
+            var midia = document.getElementById('res_midia');
+//            var pne = document.getElementById("res_bolpri_pne");
+
+            if (titulo.value.length < 5) {
+                alert("Preencha o Título.");
+                titulo.focus();
+                return false;
+            }
+
+            if (!(validaCpf(cpf))) {
+                alert("Preencha o CPF do Orientador corretamente.");
+                cpf.focus();
+                return false;
+            }
+
+            if (cel.value != "" && cel.value.length != 15) {
+                alert("Preencha o Celular do Orientador corretamente.");
+                cel.focus();
+                return false;
+            }
+
+            if (email.value != "" && !(validaMail(email))) {
+                alert("Preencha o Email do Orientador corretamente.");
+                email.focus();
+                return false;
+            }
+
+            if (midia.value != "" && !(validaUrl(midia))) {
+                alert("Preencha o Link p/ Mídia com uma URL válida.");
+                midia.focus();
+                return false;
+            }
+
+//            if (pne.value == "") {
+//                alert("Escolha uma opção para Portador de Necessidades Especiais.");
+//                pne.focus();
+//                return false;
+//            }
+
+            return true;
+        }
+
+        function handlePne(tipo) {
+            if (tipo == 'A') {
+                if($("#res_pne1").is(":checked")) {
+                    $("#def_1").removeClass('hidden');
+                    $("#def_2").removeClass('hidden');
+                    $("#def_3").removeClass('hidden');
+                    $("#def_4").removeClass('hidden');
+                } else {
+                    $("#res_servicos").val("");
+                    $("#res_deficiencias option").each(function() {
+                        $(this).attr({
+                            "selected": false
+                        });
+                    });
+                    $('#res_deficiencias').trigger("chosen:updated");
+                    $("#def_1").addClass('hidden');
+                    $("#def_2").addClass('hidden');
+                    $("#def_3").addClass('hidden');
+                    $("#def_4").addClass('hidden');
+                }
+            } else if (tipo == 'O') {
+                if($("#res_ori_pne1").is(":checked")) {
+                    $("#ori_def_1").removeClass('hidden');
+                    $("#ori_def_2").removeClass('hidden');
+                    $("#ori_def_3").removeClass('hidden');
+                    $("#ori_def_4").removeClass('hidden');
+                } else {
+                    $("#res_ori_servicos").val("");
+                    $("#res_ori_deficiencias option").each(function() {
+                        $(this).attr({
+                            "selected": false
+                        });
+                    });
+                    $('#res_ori_deficiencias').trigger("chosen:updated");
+                    $("#ori_def_1").addClass('hidden');
+                    $("#ori_def_2").addClass('hidden');
+                    $("#ori_def_3").addClass('hidden');
+                    $("#ori_def_4").addClass('hidden');
+                }
+            }
+        }
+
+    </script>
+
+    <div id="titulo">
+                    Cadastrar Resumo
+            </div>
+
+    <div id="principal">
+        <div id="campo1_head" class="t_cabecalho">
+            Dados do Resumo
+        </div>
+        <div id="campo1_corpo" class="t_corpo">
+            <form id="fmCadastroResumo" action="http://sysprppg.ufc.br/eu/2022/Resumos/modulos/inscricao/cadastrarResumoCtrl.php" method="POST">
+                <input type="hidden" name="res_eve" value="03">
+                                <span style="color: red; font-size: 11px;">*Campos obrigatórios</span>
+                <table class="form" cellspacing="2" cellpadding="2">
+                    <tbody><tr>
+                        <th>Evento</th>
+                        <td>
+                            XXXI Encontro de Iniciação à Docência - PROGRAD                        </td>
+                    </tr>
+                    <tr>
+                                          <th>Tipo <span style="font-size: 11px;">(Preferencialmente)</span></th>
+                        <td>
+                            <select id="res_tipo" name="res_tipo">
+                                <option value="">Escolha um Tipo</option>
+                                                                    <option value="P">
+                                        Pôster                                    </option>
+                                                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Área</th>
+                        <td>
+                          <select id="res_area" name="res_area" onchange="recuperarGrandeArea();">
+                                <option value="00">Escolha uma área</option>
+                                                                    <option value="01">
+                                        Ciências Agrárias                                    </option>
+                                                                    <option value="02">
+                                        Ciências Biológicas                                    </option>
+                                                                    <option value="03">
+                                        Ciências da Saúde                                    </option>
+                                                                    <option value="04">
+                                        Ciências Exatas e da Terra                                    </option>
+                                                                    <option value="05">
+                                        Ciências Humanas                                    </option>
+                                                                    <option value="06">
+                                        Ciências Sociais Aplicadas                                    </option>
+                                                                    <option value="07">
+                                        Engenharias                                    </option>
+                                                                    <option value="08">
+                                        Lingüística, Letras e Artes                                    </option>
+                                                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Grande Área</th>
+                        <td>
+                          <span id="res_grande_area"></span>
+                        </td>
+                    </tr>
+                    <!--<tr>
+                        <th>&Aacute;reas Correlatas</th>
+                        <td>
+                          <select id="res_areas_correlatas" name="res_areas_correlatas[]" class="chosen-select" multiple data-placeholder="Escolha as Áreas Correlatas">
+                                <option value="-1">Escolha uma &aacute;rea...</option>
+                                                                    <option value="01" >
+                                        Administração, Ciências Contábeis e Turismo                                    </option>
+                                                                    <option value="02" >
+                                        Astronomia, Física                                    </option>
+                                                                    <option value="41" >
+                                        Biotecnologia                                    </option>
+                                                                    <option value="27" >
+                                        Câmara de Engenharia, Tecnologia e Gestão - Interdisciplinar                                    </option>
+                                                                    <option value="26" >
+                                        Câmara de Meio Ambiente e Agrárias - Interdisciplinar                                    </option>
+                                                                    <option value="28" >
+                                        Câmara de Saúde e Biológicas - Interdisciplinar                                    </option>
+                                                                    <option value="29" >
+                                        Câmara de Sociais Aplicadas e Humanas - Interdisciplinar                                    </option>
+                                                                    <option value="03" >
+                                        Ciência da Computação                                    </option>
+                                                                    <option value="04" >
+                                        Ciência e Tecnologia de Alimentos                                    </option>
+                                                                    <option value="05" >
+                                        Ciências Agrárias                                    </option>
+                                                                    <option value="06" >
+                                        Ciências Biológicas I                                    </option>
+                                                                    <option value="07" >
+                                        Ciências Biológicas II                                    </option>
+                                                                    <option value="08" >
+                                        Ciências Biológicas III                                    </option>
+                                                                    <option value="39" >
+                                        Ciências Sociais Aplicadas I                                    </option>
+                                                                    <option value="09" >
+                                        Direito                                    </option>
+                                                                    <option value="10" >
+                                        Ecologia                                    </option>
+                                                                    <option value="11" >
+                                        Economia                                    </option>
+                                                                    <option value="12" >
+                                        Educação                                    </option>
+                                                                    <option value="46" >
+                                        Educação Física                                    </option>
+                                                                    <option value="13" >
+                                        Enfermagem                                    </option>
+                                                                    <option value="14" >
+                                        Engenharias I                                    </option>
+                                                                    <option value="15" >
+                                        Engenharias II                                    </option>
+                                                                    <option value="16" >
+                                        Engenharias III                                    </option>
+                                                                    <option value="17" >
+                                        Engenharias IV                                    </option>
+                                                                    <option value="18" >
+                                        Ensino de Ciências e Matemática                                    </option>
+                                                                    <option value="42" >
+                                        Farmácia                                    </option>
+                                                                    <option value="19" >
+                                        Filosofia, Teologia                                    </option>
+                                                                    <option value="44" >
+                                        Fisioterapia e Terapia Ocupacional                                    </option>
+                                                                    <option value="45" >
+                                        Fonoaudiologia                                    </option>
+                                                                    <option value="20" >
+                                        Geociências                                    </option>
+                                                                    <option value="21" >
+                                        Geografia                                    </option>
+                                                                    <option value="22" >
+                                        História                                    </option>
+                                                                    <option value="23" >
+                                        Letras, Lingüística e Artes                                    </option>
+                                                                    <option value="24" >
+                                        Matemática, Probabilidade e Estatística                                    </option>
+                                                                    <option value="40" >
+                                        Materiais                                    </option>
+                                                                    <option value="25" >
+                                        Medicina I                                    </option>
+                                                                    <option value="37" >
+                                        Medicina II                                    </option>
+                                                                    <option value="38" >
+                                        Medicina III                                    </option>
+                                                                    <option value="43" >
+                                        Música                                    </option>
+                                                                    <option value="30" >
+                                        Odontologia                                    </option>
+                                                                    <option value="31" >
+                                        Psicologia                                    </option>
+                                                                    <option value="32" >
+                                        Química                                    </option>
+                                                                    <option value="33" >
+                                        Saúde Coletiva                                    </option>
+                                                                    <option value="34" >
+                                        Sociologia                                    </option>
+                                                                    <option value="35" >
+                                        Zootecnia, Recursos Pesqueiros                                    </option>
+                                                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Tem&aacute;ticas
+                        <td>
+                            <select id="res_tematicas" name="res_tematicas" class="chosen-select">
+                                <option value="">Escolha uma Temática (opcional)</option>
+                                                                    <option value="a" >
+                                        Arte e Formação Universitária                                    </option>
+                                                                    <option value="k" >
+                                        Biodiversidade, Ecossistemas e Mudanças Climáticas                                    </option>
+                                                                    <option value="b" >
+                                        Ciências e Biotecnologia                                    </option>
+                                                                    <option value="j" >
+                                        Doenças Emergentes ou Negligenciadas                                    </option>
+                                                                    <option value="i" >
+                                        Economia Criativa, Colaborativa e Sustentável                                    </option>
+                                                                    <option value="c" >
+                                        Educação e Inovações Pedagógicas                                    </option>
+                                                                    <option value="d" >
+                                        Políticas Públicas e Direitos Humanos                                    </option>
+                                                                    <option value="e" >
+                                        Saúde e Bem-Estar                                    </option>
+                                                                    <option value="f" >
+                                        Sustentabilidade, Energias Renováveis e Economia do Mar                                    </option>
+                                                                    <option value="g" >
+                                        Tecnologia da Informação, Comunicação e Linguagens                                    </option>
+                                                                    <option value="h" >
+                                        Tecnologias para Transformação Social, Inclusão Digital e Acessibilidade                                    </option>
+                                                            </select>
+                        </td>
+                    </tr>-->
+                    <tr>
+                                                <th><span style="color: red">*</span>Título</th>
+                        <td>
+                            <input class="inptextc" type="text" name="res_titulo" id="res_titulo" value="" size="55" maxlength="500">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2"><hr></th>
+                    </tr>
+                    <tr>
+                        <th>Autor Principal</th>
+                        <td>
+                            05962233310 - VICTOR FERNANDO SILVA                        </td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>
+                            v.f.s2015.1@gmail.com                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Autor Principal Possui alguma deficiência?</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input id="res_pne2" type="radio" name="res_bolpri_pne" value="0" checked="" onchange="handlePne(&#39;A&#39;)">
+                            <label for="res_pne2">Não</label>
+                            &nbsp;ou&nbsp;
+                            <input id="res_pne1" type="radio" name="res_bolpri_pne" value="1" onchange="handlePne(&#39;A&#39;)">
+                            <label for="res_pne1">Sim</label>
+                        </td>
+                    </tr>
+                    <tr id="def_1" class="hidden">
+                        <th colspan="2">Que tipo de deficiência?</th>
+                    </tr>
+                    <tr id="def_2" class="hidden">
+                      <td colspan="2">
+                            <select id="res_deficiencias" name="res_deficiencias[]" class="chosen-select" multiple="" data-placeholder="Escolha as Deficiências" style="display: none;">
+                                <!--<option value="-1">Escolha uma &aacute;rea...</option>-->
+                                                                    <option value="1">
+                                        Deficiência Auditiva                                    </option>
+                                                                    <option value="2">
+                                        Surdez                                    </option>
+                                                                    <option value="3">
+                                        Deficiência Visual                                    </option>
+                                                                    <option value="4">
+                                        Cegueira                                    </option>
+                                                                    <option value="5">
+                                        Física                                    </option>
+                                                                    <option value="6">
+                                        TEA - Transtorno do Espectro Autista                                    </option>
+                                                                    <option value="7">
+                                        Múltipla                                    </option>
+                                                            </select><div class="chosen-container chosen-container-multi" style="width: 95%;" title="" id="res_deficiencias_chosen"><ul class="chosen-choices"><li class="search-field"><input type="text" value="Escolha as Deficiências" class="default" autocomplete="off" style="width: 85px;"></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div></div>
+                        </td>
+                    </tr>
+                    <tr id="def_3" class="hidden">
+                        <th colspan="2">Possui outro tipo de deficiência ou precisa de algum serviço específico?</th>
+                    </tr>
+                    <tr id="def_4" class="hidden">
+                                                <td colspan="2">
+                            <textarea style="width: 575px; height: 200px;" class="inptext" id="res_servicos" name="res_servicos"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2"><hr></th>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Orientador:</th>
+                    </tr>
+                    <tr>
+                                                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red">*</span>CPF</th>
+                        <td>
+                            <input class="inptextc" type="text" id="res_ori_cpf" name="res_ori_cpf" value="" size="20" maxlength="11" onblur="recuperarNomeOrientador();">
+                        </td>
+                    </tr>
+                    <tr>
+                                                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nome</th>
+                        <td>
+                            <span id="nome_ori"></span>
+                            <input class="inptextc" type="hidden" id="res_ori" name="res_ori" value="" size="55" maxlength="90">
+                        </td>
+                    </tr>
+                    <tr>
+                                                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Celular</th>
+                        <td>
+                            <input class="inptextc" type="text" id="res_ori_cel" name="res_ori_cel" value="" size="20" maxlength="15">
+                        </td>
+                    </tr>
+                    <tr>
+                                                <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Email</th>
+                        <td>
+                            <input class="inptextc" type="text" id="res_ori_email" name="res_ori_email" value="" size="20" maxlength="255">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Orientador Possui alguma deficiência?</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input id="res_ori_pne2" type="radio" name="res_ori_pne" value="0" checked="" onchange="handlePne(&#39;O&#39;)">
+                            <label for="res_ori_pne2">Não</label>
+                            &nbsp;ou&nbsp;
+                            <input id="res_ori_pne1" type="radio" name="res_ori_pne" value="1" onchange="handlePne(&#39;O&#39;)">
+                            <label for="res_ori_pne1">Sim</label>
+                        </td>
+                    </tr>
+                    <tr id="ori_def_1" class="hidden">
+                        <th colspan="2">Que tipo de deficiência?</th>
+                    </tr>
+                    <tr id="ori_def_2" class="hidden">
+                      <td colspan="2">
+                            <select id="res_ori_deficiencias" name="res_ori_deficiencias[]" class="chosen-select" multiple="" data-placeholder="Escolha as Deficiências" style="display: none;">
+                                <!--<option value="-1">Escolha uma &aacute;rea...</option>-->
+                                                                    <option value="1">
+                                        Deficiência Auditiva                                    </option>
+                                                                    <option value="2">
+                                        Surdez                                    </option>
+                                                                    <option value="3">
+                                        Deficiência Visual                                    </option>
+                                                                    <option value="4">
+                                        Cegueira                                    </option>
+                                                                    <option value="5">
+                                        Física                                    </option>
+                                                                    <option value="6">
+                                        TEA - Transtorno do Espectro Autista                                    </option>
+                                                                    <option value="7">
+                                        Múltipla                                    </option>
+                                                            </select><div class="chosen-container chosen-container-multi" style="width: 95%;" title="" id="res_ori_deficiencias_chosen"><ul class="chosen-choices"><li class="search-field"><input type="text" value="Escolha as Deficiências" class="default" autocomplete="off" style="width: 85px;"></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div></div>
+                        </td>
+                    </tr>
+                    <tr id="ori_def_3" class="hidden">
+                        <th colspan="2">Possui outro tipo de deficiência ou precisa de algum serviço específico?</th>
+                    </tr>
+                    <tr id="ori_def_4" class="hidden">
+                                                <td colspan="2">
+                            <textarea style="width: 575px; height: 200px;" class="inptext" id="res_ori_servicos" name="res_ori_servicos"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2"><hr></th>
+                    </tr>
+                                        <tr>
+                        <th>Co-Autores</th>
+                        <td>
+                            <input class="inptextc" type="text" name="res_part1" value="" size="55" maxlength="90">
+                        </td>
+                    </tr>
+                                        <tr>
+                        <th></th>
+                        <td>
+                            <input class="inptextc" type="text" name="res_part2" value="" size="55" maxlength="90">
+                        </td>
+                    </tr>
+                                        <tr>
+                        <th></th>
+                        <td>
+                            <input class="inptextc" type="text" name="res_part3" value="" size="55" maxlength="90">
+                        </td>
+                    </tr>
+                                        <tr>
+                        <th></th>
+                        <td>
+                            <input class="inptextc" type="text" name="res_part4" value="" size="55" maxlength="90">
+                        </td>
+                    </tr>
+                                        <tr>
+                      <th>Link p/ Mídia (opcional)</th>
+                        <td>
+                            <input class="inptextc" type="text" name="res_midia" id="res_midia" value="" size="55" maxlength="255">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Resumo <span style="font-size: 12px">(mínimo 1400 e máximo 2000 caracteres)</span></th>
+                    </tr>
+                    <tr>
+                                                <td colspan="2">
+                            <textarea style="width: 575px; height: 200px;" class="inptext" name="res_resumo" onkeyup="Contador(this,&#39;2000&#39;);"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="1"><span style="font-size: 12px">Caracteres: </span></th>
+                        <td colspan="1">
+                            <div id="contador">
+                                <span style="font-size: 12px">0/2000 digitados</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Palavras chave</th>
+                        <td>
+                                                        <input class="inptext" type="text" name="res_keyw1" value="" size="15" maxlength="30">
+                                    &nbsp;
+                                                        <input class="inptext" type="text" name="res_keyw2" value="" size="15" maxlength="30">
+                                    &nbsp;
+                                                        <input class="inptext" type="text" name="res_keyw3" value="" size="15" maxlength="30">
+                                    &nbsp;
+                                                    </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2"><hr></th>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <p>
+                                <strong>Importante:</strong>
+                                <br>
+                                - Em observância à Lei n. 13.709, de 14 de agosto de 2018, também conhecida como <strong>Lei Geral de
+            Proteção de Dados (LGPD)</strong>, a plataforma de inscrição solicita, no ato da inscrição, o consentimento do(a)
+            interessado(a) para a coleta de seus dados pessoais.
+                                <br>
+                                - Damos a saber que os dados pessoais requeridos nos formulários de inscrição, tais como: nome completo,
+                                 CPF e e-mail, serão consultados e guardados, em caráter de sigilo, pelo Comitê Organizador dos Encontros Universitários 2022.
+                                <br>
+                            </p>
+                            <p>
+                                <input type="checkbox" name="res_lgpd_bolprinc" id="res_lgpd_bolprinc" value="on">
+                                <label for="res_lgpd_bolprinc">
+                                Confirmo o meu consentimento para a coleta dos meus dados pessoais contidos neste formulário de inscrição pela <strong>Comitê Organizador dos Encontros Universitários 2022</strong>, de acordo com a <strong>Lei Geral de
+        Proteção de Dados (LGPD)</strong>.
+                                </label>
+                            </p>
+                        </td>
+                    </tr>
+                </tbody></table>
+                <div style="padding-left: 250px; float: left;" align="center">
+                                            <input class="inptext" type="submit" value="Salvar Rascunho" onclick="return verificarDados();">
+                                            <input type="hidden" name="bol_nome" value="VICTOR FERNANDO SILVA">
+                        <input type="hidden" name="bol_email" value="v.f.s2015.1@gmail.com">
+                        <input type="hidden" name="bol_celular" value="(85) 98413-2451">
+                </div>
+            </form>
+
+            <div style="padding-left: 10px; float: left;" align="center">
+                                    <form action="http://sysprppg.ufc.br/eu/2022/Resumos/modulos/inscricao/escolherEvento.php" method="POST">
+                        <input type="hidden" name="eve_op" value="03">
+                        <input class="inptext" type="submit" value="Voltar">
+                    </form>
+                
+            </div>
+        </div>
+        <div id="campo1_footer" class="t_rodape">
+        </div>
+    </div>
+
+    
+	<div id="principal_footer">
+	</div>
+	<div id="rodape">
+		<a href="http://www.prppg.ufc.br/" target="_blank">Desenvolvido pela Pró-Reitoria de Pesquisa e Pós-Graduação<br>
+		Assessoria de Tecnologia da Informação</a>
+	</div>
+
+
+</body></html>

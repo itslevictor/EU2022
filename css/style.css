@@ -1,0 +1,268 @@
+/*Classes de Layout*/
+body {
+
+	/* background: url(../images/bg.png) top center repeat; /* #E9CE2B; 2011 */   /* #FA093C */
+	background-color: white; /* #c55858; */
+        margin: 0px;
+	padding: -20px 0;
+	font: 11px "Lucida Sans Unicode", "Lucida Sans", "Lucida Grande", verdana, arial, helvetica;
+	color: #282828;
+	text-align: center;
+
+}
+
+#principal_head {
+
+	margin: auto;
+	background: url(../images/main_head.png) no-repeat;
+	
+	padding: 0px 5px 0px 5px;
+	width: 865px;
+	height: 50px;
+
+}
+
+#titulo {
+
+	margin: auto;
+	
+	background: url(../images/main_body.png) repeat-y;
+	padding: 0px 5px 0px 5px;
+	width: 865px;
+	height: auto;
+	font-size: 22px;
+	font-weight: bold;
+
+}
+
+#aviso_pne {
+
+	margin: auto;
+	
+	background: url(../images/main_body.png) repeat-y;
+	padding: 0px 5px 0px 5px;
+	width: 865px;
+	height: auto;
+
+}
+
+#principal {
+
+	margin: auto;
+	background: url(../images/main_body.png) repeat-y;
+	
+	padding: 20px 5px 30px 5px;
+	width: 865px;
+	height: auto;
+
+}
+
+#principal_footer {
+
+	margin: auto;
+	background: url(../images/main_footer.png) no-repeat;
+	
+	padding: 0px 5px 0px 5px;
+	width: 865px;
+	height: 60px;
+
+}
+
+#cabecalho {
+
+	margin: auto;
+        margin-bottom: 15px;
+        margin-top: 15px;
+	background: url(../images/banner_960x128.png) no-repeat;
+	border-radius: 12px;
+	padding: 0px 5px 0px 5px;
+	width: 950px;
+	height: 128px;
+        -webkit-box-shadow: 10px 10px 5px -4px rgba(0,0,0,0.75);
+        -moz-box-shadow: 10px 10px 5px -4px rgba(0,0,0,0.75);
+        box-shadow: 10px 10px 5px -4px rgba(0,0,0,0.75);
+        
+
+}
+
+#cabecalho_head {
+
+	margin: auto;
+	background: url(../images/h_head.png) no-repeat;
+	
+	padding: 0px 5px 0px 5px;
+	width: 865px;
+	height: 35px;
+
+}
+
+#cabecalho_footer {
+
+	margin: auto;
+	background: url(../images/h_foot.png) no-repeat;
+	
+	padding: 0px 5px 0px 5px;
+	width: 865px;
+	height: 20px;
+
+}
+
+#rodape {
+
+	width: 557px;
+	margin: auto;
+	height: auto;
+	color: black;
+	padding: 5px 15px 0px 20px;
+
+}
+/*
+#rodape > a
+{
+    text-decoration: none;
+    color: white;
+}
+
+#rodape > a:hover
+{
+    text-decoration: underline;
+    color: white;
+}
+*/
+.t_cabecalho {
+
+	background: url(../images/t_head.png) no-repeat;
+	width: 650px;
+	margin: auto;
+	height: 24.5px;
+	text-align: left;
+	padding: 7px 15px 0px 20px;
+	font-size: 18px;
+	color: white;
+        font-weight: bold;
+
+}
+
+.t_corpo {
+
+	background: url(../images/t_body.png) repeat-y;
+	width: 650px;
+	margin: auto;
+	height: auto;
+	text-align: left;
+	font-size: 15px;
+	padding: 10px 15px 10px 20px;
+
+
+}
+
+.t_rodape {
+
+	background: url(../images/t_foot.png) no-repeat;
+	width: 650px;
+	margin: auto;
+	height: 45px;
+	padding: 0px 15px 15px 20px;
+
+}
+/*Fim de Classes de Layout*/
+
+img.op
+{
+    border: none;
+    width: 24px;
+    height: 24px;
+}
+
+a.button
+{
+    padding: 1px;
+    border: 1px solid black;
+    background-color: #dcdcdc;
+    text-decoration: none;
+    color: black;
+}
+
+div.button
+{
+    padding-right: 35px;
+}
+
+table.form
+{
+    width: 90%;
+}
+
+table.form th
+{
+    width: 10%;
+}
+
+table.form td
+{
+    
+}
+
+.inptext
+{
+    border: 1px solid black;
+}
+
+.inptextc
+{
+    border: 1px solid black;
+    width: 90%;
+}
+
+.msgok
+{
+    font-weight: bold;
+    color: green;
+}
+
+.msgerror
+{
+    font-weight: bold;
+    color: red;
+}
+
+div.logout
+{
+    padding-right: 50px;
+    padding-top: 30px;
+}
+
+a
+{
+    text-decoration: none;
+    color: #4465ad;
+}
+
+a:hover
+{
+    text-decoration: underline;
+    color: #4465ad;
+}
+
+.aviso
+{
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-weight: bold;
+}
+
+.texto
+{
+    font-size: 12px;
+}
+
+.contC
+{
+  border: 1px solid black;
+  font-weight: bold;
+  text-align: right;
+}
+
+.hidden {
+    display: none;
+}
