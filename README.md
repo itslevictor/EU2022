@@ -2,4 +2,4 @@
 
 ## Verificador de Quantidade de Caracteres
 
-Durante os encontros Universitários senti a necessidade de um site para fazer o rascunho dos textos a serem enviados. então fiz!
+Durante os encontros Universitários senti a necessidade de um site para fazer o rascunho dos textos a serem enviados. Então adaptei o site para colcoar aqui!
